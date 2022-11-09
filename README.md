@@ -1,5 +1,12 @@
 # RLlib Multi Agent Self-Play Example
 
+
+The Foragers environment is a competitive environment in which "foragers" must collect potions, but there are some rules:
+* Each "forager" gets a negative reward for every move.
+* Different color potions can be collected multiple times.
+
+The foragers must collect as many potions as possible in the smallest number of moves.
+
 <div style="text-align: center">
     <img src="./assets/level_0.gif" width="250" />
     <img src="./assets/level_1.gif" width="250" />
