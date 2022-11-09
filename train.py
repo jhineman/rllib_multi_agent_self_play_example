@@ -3,7 +3,7 @@ import sys
 
 from griddly import gd
 from griddly.util.rllib.callbacks import VideoCallbacks
-from griddly.util.rllib.environment.core import RLlibEnv
+from griddly.util.rllib.environment.core import RLlibEnv, RLlibMultiAgentWrapper
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.rllib.models import ModelCatalog
 from ray.tune import register_env, tune
@@ -16,11 +16,11 @@ sep = os.pathsep
 os.environ["PYTHONPATH"] = sep.join(sys.path)
 
 environment_name = "TestEnvironment"
-environment_yaml = "Multi-Agent/foragers.yaml.yaml"
+environment_yaml = "Multi-Agent/foragers.yaml"
 model_name = "SimpleConvAgent"
 
 # Register the environment with RLlib
-register_env(environment_name, lambda config: RLlibEnv(config))
+register_env(environment_name, lambda config: RLlibMultiAgentWrapper(RLlibEnv(config)))
 
 model_class = None
 if model_name == "SimpleConvAgent":
