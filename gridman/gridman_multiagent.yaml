@@ -51,8 +51,13 @@ Environment:
     AvatarObject: avatar
   Termination:
     End:
-      - eq: [ gridman_removed, 1 ]
-
+      - or:
+          - eq:
+              - gridman_removed
+              - 1
+          - eq:
+              - cherry:count
+              - 0
   Levels:
     - >
       w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w  
@@ -82,8 +87,7 @@ Environment:
       w   c/f w   C/f w   w   c/f c/f c/f g1/f c/f c/f c/f w   w   C/f w   c/f
       w   
 
-      w   c/f w   c/f c/f w   c/f w   G   G   G w   c/f w   c/f c/f w   c/f
-      w   
+      w   c/f w   c/f c/f w   c/f w   G   G   G w   c/f w   c/f c/f w   c/f w   
 
       w   c/f w   w   c/f c/f c/f w   F   F   F   w   c/f c/f c/f w   w   c/f
       w   
@@ -310,7 +314,6 @@ Actions:
                 - 1
           Object: avatar
           Commands:
-            - mov: _dest
             - if:
                 Conditions:
                   gt:
@@ -318,11 +321,13 @@ Actions:
                     - 0
                 OnTrue:
                   - reward: 10
+                  - mov: _dest
                 OnFalse:
                   - reward: -10
-                  - set: [ gridman_removed, 1 ]
+                  - set:
+                      - gridman_removed
+                      - 1
                   - remove: true
-
         Dst:
           Object: avatar
           Commands:
@@ -334,10 +339,11 @@ Actions:
                 OnTrue:
                   - reward: -10
                   - remove: true
-                  - set: [player_done, 1]
+                  - set:
+                      - player_done
+                      - 1
                 OnFalse:
                   - reward: 10
-
       - Src:
           Preconditions:
             and:
@@ -352,14 +358,20 @@ Actions:
             - mov: _dest
             - if:
                 Conditions:
-                  gt: [ consumed_big_cherry, 0 ]
+                  gt:
+                    - consumed_big_cherry
+                    - 0
                 OnTrue:
                   - set_tile: avatar_chaser_image
                 OnFalse:
                   - set_tile: 1
         Dst:
-          Object: [ floor, staging_floor, guard_rail, cherry, big_cherry ]
-
+          Object:
+            - floor
+            - staging_floor
+            - guard_rail
+            - cherry
+            - big_cherry
       - Src:
           Preconditions:
             and:
@@ -371,7 +383,7 @@ Actions:
                   - 1
           Object: avatar
           Commands:
-            - mov: _dest
+
             - if:
                 Conditions:
                   gt:
@@ -379,10 +391,13 @@ Actions:
                     - 0
                 OnTrue:
                   - reward: -10
-                  - set: [player_done, 1]
+                  - set:
+                      - player_done
+                      - 1
                   - remove: true
                 OnFalse:
                   - reward: 10
+                  - mov: _dest
         Dst:
           Object: avatar
           Commands:
@@ -395,7 +410,9 @@ Actions:
                   - reward: 10
                 OnFalse:
                   - reward: -10
-                  - set: [ gridman_removed, 1 ]
+                  - set:
+                      - gridman_removed
+                      - 1
                   - remove: true
   - Name: init_avatar
     InputMapping:
@@ -451,7 +468,9 @@ Actions:
       - Src:
           Object: avatar
           Commands:
-            - set: [ headstart_timer, 1 ]
+            - set:
+                - headstart_timer
+                - 1
         Dst:
           Object: avatar
 Objects:

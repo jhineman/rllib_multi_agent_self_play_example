@@ -57,4 +57,8 @@ the yaml file containing the GDY of the environment
 
 We provide two simple models that can be used are `SimpleConvAgent` and `GlobalAveragePoolingAgent`
 
+## Weights and Biases
 
+You can find training information here:
+
+https://wandb.ai/griddlyai/RLLib%20Gridman%20MultiAgent

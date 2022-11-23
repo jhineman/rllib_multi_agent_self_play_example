@@ -83,7 +83,7 @@ config = (
             # A video every 50 iterations
             'record_video_config': {
                 'fps': 20,
-                'frequency': 1000,
+                'frequency': 5000,
                 'directory': video_dir,
 
                 # Will record a video of the global observations
