@@ -62,3 +62,22 @@ We provide two simple models that can be used are `SimpleConvAgent` and `GlobalA
 You can find training information here:
 
 https://wandb.ai/griddlyai/RLLib%20Gridman%20MultiAgent
+
+## Citing
+
+If you use this environment, please cite the original Griddly Paper: 
+
+```commandline
+@article{
+  author    = {Chris Bamford and
+               Shengyi Huang and
+               Simon M. Lucas},
+  title     = {Griddly: {A} platform for {AI} research in games},
+  journal   = {CoRR},
+  volume    = {abs/2011.06363},
+  year      = {2020},
+  url       = {https://arxiv.org/abs/2011.06363},
+  eprinttype = {arXiv},
+  eprint    = {2011.06363},
+}
+```
