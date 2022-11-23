@@ -2,7 +2,7 @@ import numpy as np
 from ray.rllib.models.torch.torch_modelv2 import TorchModelV2
 from torch import nn
 
-from rllib_multi_agent_self_play_example.common import layer_init
+from rllib_multi_agent_example.common import layer_init
 
 class SimpleConvAgent(TorchModelV2, nn.Module):
     """

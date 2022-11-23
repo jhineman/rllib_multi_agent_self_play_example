@@ -1,11 +1,8 @@
-# RLlib Multi Agent Self-Play Example
+# RLlib Multi Agent Self-Play Example - MultiPlayer Gridman
 
+In this version of the GridMan environment you train gridman but also his enemies!
 
-The Foragers environment is a competitive environment in which "foragers" must collect potions, but there are some rules:
-* Each "forager" gets a negative reward for every move.
-* Different color potions can be collected multiple times.
-
-The foragers must collect as many potions as possible in the smallest number of moves.
+GridMan and the 3 enemies all have completely seperate neural networks and separate rewards.
 
 <div style="text-align: center">
     <img src="./assets/level_0.gif" width="250" />
@@ -16,8 +13,6 @@ The foragers must collect as many potions as possible in the smallest number of 
 More documentation can be found [here](https://griddly.readthedocs.io/en/latest/rllib/multi-agent/index.html)
 
 This repository can be used as a starter for training any of the Griddly environemnts using RLLib
-
-This example trains the "Foragers" environment which is described [here](https://griddly.readthedocs.io/en/latest/games/Partially_Observable_Clusters/index.html)
 
 ## Installing Dependencies
 
@@ -45,8 +40,9 @@ There are three variables that you can change in train.py:
 
 ```python
 environment_name = "TestEnvironment"
-environment_yaml = "Single-Player/GVGAI/clusters_partially_observable.yaml"
-model_name = "SimpleConvAgent"
+environment_yaml = "gridman/gridman_multiagent.yaml"
+gridman_model_name = "SimpleConvAgent"
+enemy_model_name = "SimpleConvAgent"
 ```
 
 #### environment_name
