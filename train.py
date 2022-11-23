@@ -40,11 +40,11 @@ video_dir = f"videos"
 policies = {
     # Use the PolicySpec namedtuple to specify an individual policy:
     "gridman_policy": PolicySpec(
-        observation_space=gym.spaces.Box(0, 255, (7, 7, 8), float),
+        observation_space=gym.spaces.Box(0, 255, (9, 9, 11), float),
         config={"gamma": 0.95},
     ),
     "enemy_policy": PolicySpec(
-        observation_space=gym.spaces.Box(0, 255, (5, 5, 8), float),
+        observation_space=gym.spaces.Box(0, 255, (7, 7, 11), float),
         config={"gamma": 0.95},
     ),
 }
@@ -59,14 +59,14 @@ def policy_mapping_fn(agent_id, episode, worker, **kwargs):
 
 config = (
     PPOConfig()
-    .rollouts(num_rollout_workers=8, num_envs_per_worker=4, rollout_fragment_length=128)
+    .rollouts(num_rollout_workers=8, num_envs_per_worker=16, rollout_fragment_length=256)
     .callbacks(VideoCallbacks)
     .multi_agent(policies=policies, policy_mapping_fn=policy_mapping_fn)
     .training(
         model={
             "custom_model": model_name
         },
-        train_batch_size=8192,
+        train_batch_size=32768,
         lr=1e-4,
         gamma=0.95,
         lambda_=0.9,
@@ -82,7 +82,7 @@ config = (
         env_config={
             # A video every 50 iterations
             'record_video_config': {
-                'fps': 10,
+                'fps': 20,
                 'frequency': 1000,
                 'directory': video_dir,
 
@@ -92,6 +92,7 @@ config = (
                 # Will record a video of the agent's perspective
                 'include_agents': False,
             },
+            'player_done_variable': "player_done",
             'random_level_on_reset': True,
             'yaml_file': environment_yaml,
             'global_observer_type': "GlobalSpriteObserver",
@@ -107,10 +108,10 @@ config = (
 result = tune.run(
     "PPO",
     name="PPO",
-    stop={"timesteps_total": 2000000},
+    stop={"timesteps_total": 10000000},
     local_dir=test_dir,
     config=config.to_dict(),
-    # callbacks=[
-    #     WandbLoggerCallback(project="RLLib Gridman MultiAgent", entity="griddlyai")
-    # ]
+    callbacks=[
+        WandbLoggerCallback(project="RLLib Gridman MultiAgent", entity="griddlyai")
+    ]
 )

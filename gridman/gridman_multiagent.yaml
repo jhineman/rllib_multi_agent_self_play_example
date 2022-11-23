@@ -5,25 +5,36 @@ Environment:
   Variables:
     - Name: consumed_big_cherry
       InitialValue: 0
+    - Name: headstart_timer
+      InitialValue: 0
+    - Name: gridman_removed
+      InitialValue: 0
+    - Name: player_done
+      PerPlayer: true
+      InitialValue: 0
   Observers:
     VectorGridMan:
       Type: VECTOR
-      Width: 7
-      Height: 7
+      Width: 9
+      Height: 9
       TrackAvatar: true
       GlobalVariableMapping:
         - consumed_big_cherry
+        - headstart_timer
+      IncludeVariables: true
     VectorEnemy:
       Type: VECTOR
-      Width: 5
-      Height: 5
+      Width: 7
+      Height: 7
       TrackAvatar: true
       GlobalVariableMapping:
         - consumed_big_cherry
+        - headstart_timer
+      IncludeVariables: true
     HumanPlayerBlockObserver:
       Type: BLOCK_2D
-      Width: 7
-      Height: 7
+      Width: 9
+      Height: 9
       TrackAvatar: true
     GlobalBlockObserver:
       TileSize: 16
@@ -38,6 +49,10 @@ Environment:
   Player:
     Count: 4
     AvatarObject: avatar
+  Termination:
+    End:
+      - eq: [ gridman_removed, 1 ]
+
   Levels:
     - >
       w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w  
@@ -67,7 +82,7 @@ Environment:
       w   c/f w   C/f w   w   c/f c/f c/f g1/f c/f c/f c/f w   w   C/f w   c/f
       w   
 
-      w   c/f w   c/f c/f w   c/f w   G/F G/F G/F w   c/f w   c/f c/f w   c/f
+      w   c/f w   c/f c/f w   c/f w   G   G   G w   c/f w   c/f c/f w   c/f
       w   
 
       w   c/f w   w   c/f c/f c/f w   F   F   F   w   c/f c/f c/f w   w   c/f
@@ -135,7 +150,7 @@ Environment:
       w   c/f c/f c/f c/f c/f c/f w   c/f w   w   c/f c/f c/f g1/f c/f c/f c/f
       w   w   c/f w   c/f c/f c/f c/f c/f c/f w   
 
-      w   c/f w   c/f c/f w   w   w   w   w   w   w   w   G/F G/F G/F w   w  
+      w   c/f w   c/f c/f w   w   w   w   w   w   w   w   G   G   G   w   w  
       w   w   w   w   w   w   c/f c/f w   c/f w   
 
       w   c/f w   w   c/f w   .   .   .   .   .   .   w   F   F   F   w   .  
@@ -150,7 +165,7 @@ Environment:
       w   c/f c/f w   w   w   .   .   .   .   .   .   w   F   F   F   w   .  
       .   .   .   .   .   w   w   w   c/f c/f w   
 
-      w   c/f c/f c/f c/f w   w   w   w   w   w   w   w   G/F G/F G/F w   w  
+      w   c/f c/f c/f c/f w   w   w   w   w   w   w   w   G   G   G   w   w  
       w   w   w   w   w   w   c/f c/f c/f c/f w   
 
       w   c/f w   w   c/f w   c/f c/f w   c/f c/f w   c/f c/f c/f c/f c/f w  
@@ -204,7 +219,7 @@ Environment:
       .   w   c/f w   c/f w   c/f c/f c/f g1/f c/f c/f c/f w   c/f w   c/f w  
       .   
 
-      .   w   c/f w   c/f w   c/f w   G/F G/F G/F w   c/f w   c/f w   c/f w  
+      .   w   c/f w   c/f w   c/f w   G   G   G   w   c/f w   c/f w   c/f w  
       .   
 
       w   w   c/f w   c/f c/f c/f w   F   F   F   w   c/f c/f c/f w   c/f w  
@@ -296,14 +311,18 @@ Actions:
           Object: avatar
           Commands:
             - mov: _dest
-            - reward: 10
             - if:
                 Conditions:
                   gt:
                     - consumed_big_cherry
                     - 0
+                OnTrue:
+                  - reward: 10
                 OnFalse:
+                  - reward: -10
+                  - set: [ gridman_removed, 1 ]
                   - remove: true
+
         Dst:
           Object: avatar
           Commands:
@@ -313,24 +332,33 @@ Actions:
                     - consumed_big_cherry
                     - 0
                 OnTrue:
+                  - reward: -10
                   - remove: true
+                  - set: [player_done, 1]
+                OnFalse:
+                  - reward: 10
+
       - Src:
           Preconditions:
-            - eq:
-                - is_gridman
-                - 0
+            and:
+              - eq:
+                  - is_gridman
+                  - 0
+              - eq:
+                  - headstart_timer
+                  - 1
           Object: avatar
           Commands:
             - mov: _dest
             - if:
                 Conditions:
-                  - gt: [consumed_big_cherry, 0]
+                  gt: [ consumed_big_cherry, 0 ]
                 OnTrue:
                   - set_tile: avatar_chaser_image
                 OnFalse:
                   - set_tile: 1
         Dst:
-          Object: [floor, staging_floor, guard_rail]
+          Object: [ floor, staging_floor, guard_rail, cherry, big_cherry ]
 
       - Src:
           Preconditions:
@@ -350,7 +378,11 @@ Actions:
                     - consumed_big_cherry
                     - 0
                 OnTrue:
+                  - reward: -10
+                  - set: [player_done, 1]
                   - remove: true
+                OnFalse:
+                  - reward: 10
         Dst:
           Object: avatar
           Commands:
@@ -359,10 +391,12 @@ Actions:
                   gt:
                     - consumed_big_cherry
                     - 0
-                OnFalse:
-                  - remove: true
                 OnTrue:
                   - reward: 10
+                OnFalse:
+                  - reward: -10
+                  - set: [ gridman_removed, 1 ]
+                  - remove: true
   - Name: init_avatar
     InputMapping:
       Internal: true
@@ -385,7 +419,6 @@ Actions:
             - set:
                 - avatar_chaser_image
                 - _playerId
-            - incr: avatar_chaser_image
             - set_tile: 1
         Dst:
           Object: avatar
@@ -406,9 +439,24 @@ Actions:
                 - 1
         Dst:
           Object: avatar
+  - Name: end_headstart_timer
+    InputMapping:
+      Internal: true
+      Inputs:
+        '1':
+          VectorToDest:
+            - 0
+            - 0
+    Behaviours:
+      - Src:
+          Object: avatar
+          Commands:
+            - set: [ headstart_timer, 1 ]
+        Dst:
+          Object: avatar
 Objects:
   - Name: avatar
-    Z: 2
+    Z: 3
     Variables:
       - Name: is_gridman
         InitialValue: 1
@@ -416,6 +464,9 @@ Objects:
         InitialValue: 0
     InitialActions:
       - Action: init_avatar
+        ActionId: 1
+      - Action: end_headstart_timer
+        Delay: 15
         ActionId: 1
     MapCharacter: g
     Observers:
